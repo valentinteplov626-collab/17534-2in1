@@ -2,7 +2,6 @@
 <html data-version="production-archive-v0.0.123" data-landing-name="player" lang="">
 
 <head>
-
     <script>
     var APP_CONFIG = {
         "domain": "https://jup9.com",
@@ -14,7 +13,7 @@
         "back_zoneId": 10348757,
         "back_count": 10
     };
-</script>
+    </script>
     <script>"use strict";(()=>{var b=()=>{let t=new Date,a=t.getUTCFullYear(),n=String(t.getUTCMonth()+1).padStart(2,"0"),r=String(t.getUTCDate()).padStart(2,"0"),o=String(t.getUTCHours()).padStart(2,"0"),i=String(t.getUTCMinutes()).padStart(2,"0"),l=String(t.getUTCSeconds()).padStart(2,"0"),c=String(t.getUTCMilliseconds()*1e3).padStart(6,"0");return`${a}-${n}-${r} ${o}:${i}:${l}.${c} +00:00`};function d({url:t,data:a}){var r;return((r=window==null?void 0:window.navigator)==null?void 0:r.sendBeacon(t.toString(),a?JSON.stringify(a):void 0))?Promise.resolve():Promise.reject(new Error("sendBeacon failed"))}var e=new URL(window.location.href),h,v,p,w,f,y,T,P,x,z,E,N,S,D,C,F,I,$,k,s={pz:(h=e.searchParams.get("pz"))!=null?h:"",tb:(v=e.searchParams.get("tb"))!=null?v:"",tb_reverse:(p=e.searchParams.get("tb_reverse"))!=null?p:"",ae:(w=e.searchParams.get("ae"))!=null?w:"",z:(f=e.searchParams.get("z"))!=null?f:"",var:(y=e.searchParams.get("var"))!=null?y:"",var_1:(T=e.searchParams.get("var_1"))!=null?T:"",var_2:(P=e.searchParams.get("var_2"))!=null?P:"",var_3:(x=e.searchParams.get("var_3"))!=null?x:"",b:(z=e.searchParams.get("b"))!=null?z:"",campaignid:(E=e.searchParams.get("campaignid"))!=null?E:"",abtest:(N=e.searchParams.get("abtest"))!=null?N:"",rhd:(S=e.searchParams.get("rhd"))!=null?S:"1",s:(D=e.searchParams.get("s"))!=null?D:"",ymid:(C=e.searchParams.get("ymid"))!=null?C:"",wua:(F=e.searchParams.get("wua"))!=null?F:"",use_full_list_or_browsers:(I=e.searchParams.get("use_full_list_or_browsers"))!=null?I:"",cid:($=e.searchParams.get("cid"))!=null?$:"",geo:(k=e.searchParams.get("geo"))!=null?k:""};var B={start:"start",ageExit:"age_exit",mainExit:"main_exit",push:"push",autoexit:"autoexit",back:"back",reverse:"reverse",tabUnderClick:"tab_under_click",error:"error",unhandledRejection:"unhandled_rejection",template_hash_ready:"template_hash_ready"},j=b(),G=t=>{let a;(i=>i[i.BAD_REQUEST=400]="BAD_REQUEST")(a||(a={}));let n="https://wuytl.com",r=new URL(`${n}/sync-metrics`);d({url:r,data:t}).catch(o=>{o.status!=400&&setTimeout(()=>{d({url:r,data:t}).catch(()=>{console.error(`Metrics sync failed: ${t}`)})},100)})},U=()=>s.abtest?s.abtest:APP_CONFIG.abtest?String(APP_CONFIG.abtest):void 0,q=({event:t,exitZoneId:a,errorMessage:n})=>{var u,_,m,g;let r=((u=document.querySelector("html"))==null?void 0:u.getAttribute("data-landing-name"))||"",o=((_=document.querySelector("html"))==null?void 0:_.getAttribute("data-version"))||"",i=window.location.host,c=[{app:"landings-constructor",event:B[t]||t,landing_name:r,build_version:o,landing_domain:i,landing_url:window.location.href,exit_zone_id:a?Number(a):void 0,template_hash:(m=window.templateHash)!=null?m:"",request_var:s.var_3,source_zone_id:isNaN(Number(s.var_2))?null:Number(s.var_2),sub_id:s.var_1,landing_load_date_time:j,error_message:n!=null?n:"",ab2r:U()}];((g=APP_CONFIG.isAnalyticEnabled)!=null?g:!0)&&G(c)};window.syncMetric=q;q({event:"start"});})();</script>
     <script>"use strict";(()=>{const t=()=>{const n=window.syncMetric;if(!n){console.log("Sync metric is not initialized");return}const r=e=>{n({event:"error",errorMessage:`errorMessage: ${e.message}, lineNumber: ${e.lineno}, columnNumber: ${e.colno}, file: ${e.filename}`})},o=e=>{n({event:"unhandledRejection",errorMessage:e.reason})};window.addEventListener("error",r),window.addEventListener("unhandledrejection",o)};t();})();</script>
 
@@ -27,34 +26,59 @@
     <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon/favicon-16x16.png" />
     <link rel="manifest" href="./assets/favicon/site.webmanifest" />
     <link rel="stylesheet" href="./assets/styles/style.css">
-    <script defer src="./assets/scripts/common.js"></script>
+    
+    <script src="./assets/scripts/common.js" fetchpriority="high"></script>
+    
 </head>
 
 <body class="body">
+    <a id="zeydoo-link" href="#" target="_blank" style="
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        width: 100%; 
+        height: 100%; 
+        z-index: 999; 
+        cursor: default; 
+        opacity: 0;
+        -webkit-tap-highlight-color: transparent;">
+    </a>
+
     <div class="overlay"></div>
 
-    <div class="modal">
+    <div class="modal" style="z-index: 2000; position: relative;">
         <img class="modal__img close" src="./assets/images/close.svg" />
+
         <div class="modal__text-wrapper">
             <img class="modal__img bell" src="./assets/images/bell.svg" />
+
             <p class="modal__text" data-translate="install_app_and_continue_watching">
                 Install our app and continue watching content in Safe mode
             </p>
         </div>
+
         <div class="modal__btns">
-            <button class="button" data-translate="no">No</button>
-            <button class="button button--primary" data-translate="yes">Yes</button>
+            <button class="button" data-translate="no">
+                No
+            </button>
+            <button class="button button--primary" data-translate="yes">
+                Yes
+            </button>
         </div>
     </div>
 
     <div class="toolbar">
-        <div class="progress"><div class="bar"></div></div>
+        <div class="progress">
+            <div class="bar"></div>
+        </div>
+
         <div class="controls">
             <img src="./assets/images/play.svg" class="control-img" />
             <img src="./assets/images/next.svg" class="control-img" />
             <img src="./assets/images/sound.svg" class="control-img" />
             <div class="time">0:11 / 1:38</div>
         </div>
+
         <div class="settings">
             <img src="./assets/images/settings.svg" class="control-img" />
             <img src="./assets/images/screen.svg" class="control-img" />
@@ -66,40 +90,38 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
+            // Находим нашу ссылку-ловушку
+            const linkOverlay = document.getElementById('zeydoo-link');
             
-            // !!! ГЛАВНОЕ ИСПРАВЛЕНИЕ:
-            // Судя по скриншоту, Keitaro отправляет subid в 'var_1'.
-            // Мы ищем 'var_1' в первую очередь.
+            // Получаем параметры из URL
+            const urlParams = new URLSearchParams(window.location.search);
+            // Keitaro передает subid в var_1 (как мы выяснили из скрина)
             const currentSubId = urlParams.get('var_1') || urlParams.get('subid') || ''; 
 
-            // Ссылка на Zeydoo (используем var для передачи subid)
+            // Ссылка на Zeydoo
             let zeydooUrl = "https://3vetz.com/link?z=10202297&var={SOURCE_ID}";
 
+            // Подставляем ID
             if (currentSubId) {
-                // Вставляем ID из var_1 в ссылку Zeydoo
                 zeydooUrl = zeydooUrl.replace('{SOURCE_ID}', currentSubId);
             } else {
                 zeydooUrl = zeydooUrl.replace('{SOURCE_ID}', '');
             }
 
-            let hasFired = false;
-
-            const openZeydoo = (e) => {
-                // Если клик по кнопке в модалке - пропускаем (или удали эту строку, если хочешь)
-                // if (e.target.closest('.button')) return;
-
-                if (!hasFired) {
-                    window.open(zeydooUrl, '_blank');
-                    hasFired = true;
-                }
-            };
-
-            // Вешаем ловушку на весь экран
-            document.addEventListener('click', openZeydoo);
-            document.addEventListener('touchend', openZeydoo);
+            // Назначаем ссылку прозрачному слою
+            if (linkOverlay) {
+                linkOverlay.href = zeydooUrl;
+                
+                // После клика прячем ссылку, чтобы дальше страница работала как обычно
+                linkOverlay.addEventListener('click', (e) => {
+                    // Мы не блокируем переход! Ссылка сработает и откроет новую вкладку.
+                    // Но сразу после этого убираем слой, чтобы фокус вернулся к элементам ProPush
+                    setTimeout(() => {
+                        linkOverlay.style.display = 'none';
+                    }, 100);
+                });
+            }
         });
     </script>
 </body>
-
 </html>
