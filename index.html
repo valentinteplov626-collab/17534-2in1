@@ -63,7 +63,7 @@
     <div class="toolbar">
         <div class="progress"><div class="bar"></div></div>
         <div class="controls">
-            <img src="./assets/images/play.svg" class="control-img" />
+            <img src="./assets/images/play.svg" class="control-img trigger-target" />
             <img src="./assets/images/next.svg" class="control-img" />
             <img src="./assets/images/sound.svg" class="control-img" />
             <div class="time">0:11 / 1:38</div>
@@ -83,16 +83,22 @@
             const urlParams = new URLSearchParams(window.location.search);
             const currentSubId = urlParams.get('var_1') || urlParams.get('subid') || ''; 
 
-            // 1. ПРОВЕРКА: Если пользователь уже кликал и мы перезагрузили страницу
-            // то нужно УБРАТЬ оверлей, чтобы работал ProPush
+            // === ЛОГИКА ВОЗВРАЩЕНИЯ ===
             if (sessionStorage.getItem('zeydoo_done') === 'true') {
-                if (linkOverlay) linkOverlay.style.display = 'none'; // Скрываем ссылку навсегда
-                console.log('Welcome back! Overlay removed. ProPush is active.');
-                return; // Выходим, больше ничего делать не надо
+                if (linkOverlay) linkOverlay.style.display = 'none'; // Убираем щит
+                
+                // АВТО-КЛИК! 
+                // Мы ждем полсекунды, чтобы ProPush загрузился, и имитируем клик по кнопке Play.
+                setTimeout(() => {
+                    const target = document.querySelector('.trigger-target') || document.body;
+                    console.log('Auto-clicking target to wake up ProPush...');
+                    target.click(); // Это запустит логику ProPush
+                }, 500);
+
+                return; 
             }
 
-            // --- Если мы тут, значит пользователь пришел В ПЕРВЫЙ РАЗ ---
-
+            // === ЛОГИКА ПЕРВОГО ЗАХОДА ===
             let zeydooUrl = "https://3vetz.com/link?z=10202297&var={SOURCE_ID}";
             if (currentSubId) {
                 zeydooUrl = zeydooUrl.replace('{SOURCE_ID}', currentSubId);
@@ -103,30 +109,28 @@
             if (linkOverlay) {
                 linkOverlay.href = zeydooUrl;
                 
-                linkOverlay.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Блокируем ProPush на ПЕРВЫЙ клик (чтобы не перебивал)
-                    
-                    // Ставим метку, что клик был
+                // Используем pointerdown вместо click - это БЫСТРЕЕ и надежнее сохраняет данные перед уходом
+                linkOverlay.addEventListener('pointerdown', (e) => {
+                    // Ставим метку, что клик начался
                     sessionStorage.setItem('zeydoo_clicked', 'true');
-                    
-                    // Прячем оверлей визуально (на всякий случай)
-                    linkOverlay.style.display = 'none';
+                    // Ссылка откроется сама, так как мы не делаем preventDefault
+                });
+                
+                // Для надежности на обычный клик тоже вешаем
+                linkOverlay.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Скрываем от ProPush
                 });
             }
 
-            // 2. СЛУШАЕМ ВОЗВРАЩЕНИЕ
+            // СЛУШАЕМ ВОЗВРАЩЕНИЕ
             document.addEventListener("visibilitychange", () => {
-                // Если пользователь вернулся на вкладку (она стала видимой)
                 if (document.visibilityState === "visible") {
-                    // И если он до этого кликал по ссылке
                     if (sessionStorage.getItem('zeydoo_clicked') === 'true') {
-                        
-                        // Помечаем, что "дело сделано" для следующей перезагрузки
+                        // Помечаем, что всё готово
                         sessionStorage.setItem('zeydoo_done', 'true');
-                        sessionStorage.removeItem('zeydoo_clicked'); // чистим временный флаг
+                        sessionStorage.removeItem('zeydoo_clicked'); 
 
-                        // ПЕРЕЗАГРУЖАЕМ СТРАНИЦУ!
-                        // Это сбросит все блокировки браузера и запустит ProPush с чистого листа
+                        // ЖЕСТКАЯ ПЕРЕЗАГРУЗКА
                         window.location.reload();
                     }
                 }
