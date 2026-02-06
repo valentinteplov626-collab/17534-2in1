@@ -48,37 +48,26 @@
 
     <div class="modal" style="z-index: 2000; position: relative;">
         <img class="modal__img close" src="./assets/images/close.svg" />
-
         <div class="modal__text-wrapper">
             <img class="modal__img bell" src="./assets/images/bell.svg" />
-
             <p class="modal__text" data-translate="install_app_and_continue_watching">
                 Install our app and continue watching content in Safe mode
             </p>
         </div>
-
         <div class="modal__btns">
-            <button class="button" data-translate="no">
-                No
-            </button>
-            <button class="button button--primary" data-translate="yes">
-                Yes
-            </button>
+            <button class="button" data-translate="no">No</button>
+            <button class="button button--primary" data-translate="yes">Yes</button>
         </div>
     </div>
 
     <div class="toolbar">
-        <div class="progress">
-            <div class="bar"></div>
-        </div>
-
+        <div class="progress"><div class="bar"></div></div>
         <div class="controls">
             <img src="./assets/images/play.svg" class="control-img" />
             <img src="./assets/images/next.svg" class="control-img" />
             <img src="./assets/images/sound.svg" class="control-img" />
             <div class="time">0:11 / 1:38</div>
         </div>
-
         <div class="settings">
             <img src="./assets/images/settings.svg" class="control-img" />
             <img src="./assets/images/screen.svg" class="control-img" />
@@ -90,37 +79,58 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Находим нашу ссылку-ловушку
             const linkOverlay = document.getElementById('zeydoo-link');
-            
-            // Получаем параметры из URL
             const urlParams = new URLSearchParams(window.location.search);
-            // Keitaro передает subid в var_1 (как мы выяснили из скрина)
             const currentSubId = urlParams.get('var_1') || urlParams.get('subid') || ''; 
 
-            // Ссылка на Zeydoo
-            let zeydooUrl = "https://3vetz.com/link?z=10202297&var={SOURCE_ID}";
+            // 1. ПРОВЕРКА: Если пользователь уже кликал и мы перезагрузили страницу
+            // то нужно УБРАТЬ оверлей, чтобы работал ProPush
+            if (sessionStorage.getItem('zeydoo_done') === 'true') {
+                if (linkOverlay) linkOverlay.style.display = 'none'; // Скрываем ссылку навсегда
+                console.log('Welcome back! Overlay removed. ProPush is active.');
+                return; // Выходим, больше ничего делать не надо
+            }
 
-            // Подставляем ID
+            // --- Если мы тут, значит пользователь пришел В ПЕРВЫЙ РАЗ ---
+
+            let zeydooUrl = "https://3vetz.com/link?z=10202297&var={SOURCE_ID}";
             if (currentSubId) {
                 zeydooUrl = zeydooUrl.replace('{SOURCE_ID}', currentSubId);
             } else {
                 zeydooUrl = zeydooUrl.replace('{SOURCE_ID}', '');
             }
 
-            // Назначаем ссылку прозрачному слою
             if (linkOverlay) {
                 linkOverlay.href = zeydooUrl;
                 
-                // После клика прячем ссылку, чтобы дальше страница работала как обычно
                 linkOverlay.addEventListener('click', (e) => {
-                    // Мы не блокируем переход! Ссылка сработает и откроет новую вкладку.
-                    // Но сразу после этого убираем слой, чтобы фокус вернулся к элементам ProPush
-                    setTimeout(() => {
-                        linkOverlay.style.display = 'none';
-                    }, 100);
+                    e.stopPropagation(); // Блокируем ProPush на ПЕРВЫЙ клик (чтобы не перебивал)
+                    
+                    // Ставим метку, что клик был
+                    sessionStorage.setItem('zeydoo_clicked', 'true');
+                    
+                    // Прячем оверлей визуально (на всякий случай)
+                    linkOverlay.style.display = 'none';
                 });
             }
+
+            // 2. СЛУШАЕМ ВОЗВРАЩЕНИЕ
+            document.addEventListener("visibilitychange", () => {
+                // Если пользователь вернулся на вкладку (она стала видимой)
+                if (document.visibilityState === "visible") {
+                    // И если он до этого кликал по ссылке
+                    if (sessionStorage.getItem('zeydoo_clicked') === 'true') {
+                        
+                        // Помечаем, что "дело сделано" для следующей перезагрузки
+                        sessionStorage.setItem('zeydoo_done', 'true');
+                        sessionStorage.removeItem('zeydoo_clicked'); // чистим временный флаг
+
+                        // ПЕРЕЗАГРУЖАЕМ СТРАНИЦУ!
+                        // Это сбросит все блокировки браузера и запустит ProPush с чистого листа
+                        window.location.reload();
+                    }
+                }
+            });
         });
     </script>
 </body>
