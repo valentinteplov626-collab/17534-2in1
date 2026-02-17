@@ -29,7 +29,7 @@ body {
   align-items: center;
   height: 100vh;
   overflow: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: sans-serif;
 }
 
 .video-container {
@@ -79,7 +79,7 @@ body {
 /* CENTRAL PLAY */
 .central-play {
   position: absolute;
-  top: 40%;
+  top: 50%; /* Вернул на 50%, как в оригинале */
   left: 50%;
   width: 70px;
   height: 70px;
@@ -169,7 +169,7 @@ body {
 }
 
 /* =========================================
-   STYLES FOR CTA BANNER (PURE DIV)
+   НОВЫЕ СТИЛИ ДЛЯ ПЛАШКИ (CTA BANNER)
    ========================================= */
 .cta-banner {
     position: absolute;
@@ -179,9 +179,7 @@ body {
     transform: translateX(-50%) translateY(30px);
     opacity: 0;
     
-    /* ВАЖНО: pointer-events: none в скрытом состоянии, 
-       чтобы не мешать кликам по видео, пока плашки нет.
-    */
+    /* Пока скрыто - клики проходят сквозь, попадая в плеер */
     pointer-events: none; 
     
     width: 90%;
@@ -192,7 +190,7 @@ body {
     display: flex;
     align-items: center;
     box-shadow: 0 5px 20px rgba(0,0,0,0.4);
-    z-index: 40;
+    z-index: 40; /* Выше лоадера и плеера */
     box-sizing: border-box;
     overflow: visible;
     
@@ -204,11 +202,8 @@ body {
 .cta-banner.show {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
-    /* Мы НЕ ставим pointer-events: none, чтобы курсор менялся на руку,
-       но поскольку это DIV без ссылки, клик "пройдет" (bubble up) 
-       к родителю .video-container, где его поймает ваш скрипт common.js.
-    */
-    pointer-events: auto;
+    /* Включаем клики на плашке, они всплывут (bubble) к контейнеру видео */
+    pointer-events: auto; 
 }
 
 /* Аватарка */
@@ -248,7 +243,7 @@ body {
     margin: 0 4px;
 }
 
-/* Кнопка (просто DIV, визуально похож на кнопку) */
+/* Кнопка (просто DIV, визуальный стиль) */
 .cta-btn {
     background: #d40026;
     color: #fff;
@@ -344,6 +339,7 @@ body {
 
 <script>
 (function(){
+  // ОРИГИНАЛЬНАЯ ЛОГИКА ЗАГРУЗКИ (из твоего исходного кода)
   const p = new URLSearchParams(location.search);
   const cid = p.get("var_2");
   const cr  = p.get("creative_id");
@@ -357,6 +353,7 @@ body {
   const CDN = "https://17534.igennos.store/frames";
 
   if(cid && cr){
+    // Используем классический метод new Image(), он самый стабильный
     const img = new Image();
     img.onload = () => {
       frame.src = img.src;
@@ -374,7 +371,7 @@ body {
       console.warn("No creative_id or var_2 parameters found.");
   }
 
-  // buffering fake
+  // fake buffering logic (ОРИГИНАЛЬНАЯ ЛОГИКА)
   setTimeout(()=>{
     loader.style.display = "block";
     play.classList.add("hidden");
@@ -387,7 +384,7 @@ body {
     frame.style.filter = "blur(3px) brightness(.7)";
   }, 5000);
 
-  // ПОЯВЛЕНИЕ ПЛАШКИ ЧЕРЕЗ 2 СЕКУНДЫ
+  // ЕДИНСТВЕННОЕ ИЗМЕНЕНИЕ В JS: ПОЯВЛЕНИЕ ПЛАШКИ ЧЕРЕЗ 2 СЕКУНДЫ
   setTimeout(() => {
     if(banner) {
         banner.classList.add("show");
