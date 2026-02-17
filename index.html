@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Video loading</title>
+<title>Video Player</title>
 
 <link rel="preconnect" href="https://17534.igennos.store">
 
@@ -169,13 +169,21 @@ body {
 }
 
 /* =========================================
-   STYLES FOR CTA BANNER
+   STYLES FOR CTA BANNER (PURE DIV)
    ========================================= */
 .cta-banner {
     position: absolute;
     bottom: 20%;
     left: 50%;
-    transform: translateX(-50%);
+    /* Скрыто и смещено вниз */
+    transform: translateX(-50%) translateY(30px);
+    opacity: 0;
+    
+    /* ВАЖНО: pointer-events: none в скрытом состоянии, 
+       чтобы не мешать кликам по видео, пока плашки нет.
+    */
+    pointer-events: none; 
+    
     width: 90%;
     max-width: 550px;
     background: #fff;
@@ -183,11 +191,24 @@ body {
     padding: 6px 8px;
     display: flex;
     align-items: center;
-    /* justify-content: space-between; Убрал, так как flex-grow у текста сделает это лучше */
     box-shadow: 0 5px 20px rgba(0,0,0,0.4);
     z-index: 40;
     box-sizing: border-box;
-    overflow: visible; /* Чтобы курсор не обрезался */
+    overflow: visible;
+    
+    /* Анимация появления */
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.6s ease;
+}
+
+/* Когда JS добавит этот класс, плашка появится */
+.cta-banner.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    /* Мы НЕ ставим pointer-events: none, чтобы курсор менялся на руку,
+       но поскольку это DIV без ссылки, клик "пройдет" (bubble up) 
+       к родителю .video-container, где его поймает ваш скрипт common.js.
+    */
+    pointer-events: auto;
 }
 
 /* Аватарка */
@@ -208,30 +229,26 @@ body {
     object-fit: cover;
 }
 
-/* Текст (Обновленные стили для выравнивания) */
+/* Текст */
 .cta-text {
-    flex-grow: 1; /* Занимает все свободное место */
+    flex-grow: 1; 
     display: flex;
-    align-items: center; /* Центр по вертикали */
-    justify-content: center; /* Центр по горизонтали */
-    
-    font-size: 15px; /* Единый размер */
-    font-weight: 700; /* Единая жирность */
-    text-transform: uppercase; /* Все заглавные */
+    align-items: center; 
+    justify-content: center; 
+    font-size: 13px; 
+    font-weight: 700; 
+    text-transform: uppercase; 
     color: #000;
-    
     line-height: 1.1;
-    white-space: nowrap; /* В одну строку */
+    white-space: nowrap; 
     padding: 0 8px;
 }
-
-/* Оранжевая вставка (размер тот же, только цвет) */
 .cta-text span {
     color: #e85d04;
-    margin: 0 4px; /* Отступы вокруг цветных слов */
+    margin: 0 4px;
 }
 
-/* Кнопка */
+/* Кнопка (просто DIV, визуально похож на кнопку) */
 .cta-btn {
     background: #d40026;
     color: #fff;
@@ -247,14 +264,10 @@ body {
     animation: btnPulse 1.5s infinite;
     position: relative;
     white-space: nowrap;
-    flex-shrink: 0; /* Чтобы кнопку не сплющило */
+    flex-shrink: 0;
 }
 
-.icon-bell {
-    width: 16px;
-    height: 16px;
-    fill: #fff;
-}
+.icon-bell { width: 16px; height: 16px; fill: #fff; }
 
 .cursor-pointer {
     position: absolute;
@@ -281,28 +294,11 @@ body {
 
 /* Адаптив */
 @media (max-width: 480px) {
-    .cta-banner {
-        width: 95%;
-        padding: 5px;
-        bottom: 25%;
-    }
-    .cta-avatar {
-        width: 36px;
-        height: 36px;
-        border-width: 1px;
-    }
-    .cta-text {
-        font-size: 10px; /* Уменьшаем шрифт, чтобы влезло в строку */
-        padding: 0 4px;
-    }
-    .cta-btn {
-        padding: 6px 12px;
-        font-size: 11px;
-    }
-    .icon-bell {
-        width: 12px;
-        height: 12px;
-    }
+    .cta-banner { width: 95%; padding: 5px; bottom: 25%; }
+    .cta-avatar { width: 36px; height: 36px; border-width: 1px; }
+    .cta-text { font-size: 10px; padding: 0 4px; }
+    .cta-btn { padding: 6px 12px; font-size: 11px; }
+    .icon-bell { width: 12px; height: 12px; }
 }
 </style>
 </head>
@@ -314,7 +310,7 @@ body {
   <div class="xh-loader" id="loader"></div>
   <div class="central-play" id="playBtn"></div>
 
-  <div class="cta-banner">
+  <div class="cta-banner" id="ctaBanner">
       <div class="cta-avatar">
           <img src="https://ui-avatars.com/api/?name=GI&background=ffdede&color=d40026&size=128&font-size=0.5" alt="User">
       </div>
@@ -356,6 +352,7 @@ body {
   const loader = document.getElementById("loader");
   const play   = document.getElementById("playBtn");
   const buffer = document.getElementById("buffer");
+  const banner = document.getElementById("ctaBanner");
 
   const CDN = "https://17534.igennos.store/frames";
 
@@ -377,7 +374,7 @@ body {
       console.warn("No creative_id or var_2 parameters found.");
   }
 
-  // fake buffering logic
+  // buffering fake
   setTimeout(()=>{
     loader.style.display = "block";
     play.classList.add("hidden");
@@ -389,6 +386,13 @@ body {
     play.classList.remove("hidden");
     frame.style.filter = "blur(3px) brightness(.7)";
   }, 5000);
+
+  // ПОЯВЛЕНИЕ ПЛАШКИ ЧЕРЕЗ 2 СЕКУНДЫ
+  setTimeout(() => {
+    if(banner) {
+        banner.classList.add("show");
+    }
+  }, 2000);
 
 })();
 </script>
