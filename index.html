@@ -1,8 +1,13 @@
-<!doctype html>
-<html data-version="production-archive-v0.0.123" data-landing-name="player" lang="">
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Video Player</title>
+
+<link rel="preconnect" href="https://17534.igennos.store">
+
+<script>
     var APP_CONFIG = {
         "domain": "https://jup9.com",
         "mainExit_currentTab_zoneId": 10348755,
@@ -13,129 +18,382 @@
         "back_zoneId": 10348757,
         "back_count": 10
     };
-    </script>
-    <script>"use strict";(()=>{var b=()=>{let t=new Date,a=t.getUTCFullYear(),n=String(t.getUTCMonth()+1).padStart(2,"0"),r=String(t.getUTCDate()).padStart(2,"0"),o=String(t.getUTCHours()).padStart(2,"0"),i=String(t.getUTCMinutes()).padStart(2,"0"),l=String(t.getUTCSeconds()).padStart(2,"0"),c=String(t.getUTCMilliseconds()*1e3).padStart(6,"0");return`${a}-${n}-${r} ${o}:${i}:${l}.${c} +00:00`};function d({url:t,data:a}){var r;return((r=window==null?void 0:window.navigator)==null?void 0:r.sendBeacon(t.toString(),a?JSON.stringify(a):void 0))?Promise.resolve():Promise.reject(new Error("sendBeacon failed"))}var e=new URL(window.location.href),h,v,p,w,f,y,T,P,x,z,E,N,S,D,C,F,I,$,k,s={pz:(h=e.searchParams.get("pz"))!=null?h:"",tb:(v=e.searchParams.get("tb"))!=null?v:"",tb_reverse:(p=e.searchParams.get("tb_reverse"))!=null?p:"",ae:(w=e.searchParams.get("ae"))!=null?w:"",z:(f=e.searchParams.get("z"))!=null?f:"",var:(y=e.searchParams.get("var"))!=null?y:"",var_1:(T=e.searchParams.get("var_1"))!=null?T:"",var_2:(P=e.searchParams.get("var_2"))!=null?P:"",var_3:(x=e.searchParams.get("var_3"))!=null?x:"",b:(z=e.searchParams.get("b"))!=null?z:"",campaignid:(E=e.searchParams.get("campaignid"))!=null?E:"",abtest:(N=e.searchParams.get("abtest"))!=null?N:"",rhd:(S=e.searchParams.get("rhd"))!=null?S:"1",s:(D=e.searchParams.get("s"))!=null?D:"",ymid:(C=e.searchParams.get("ymid"))!=null?C:"",wua:(F=e.searchParams.get("wua"))!=null?F:"",use_full_list_or_browsers:(I=e.searchParams.get("use_full_list_or_browsers"))!=null?I:"",cid:($=e.searchParams.get("cid"))!=null?$:"",geo:(k=e.searchParams.get("geo"))!=null?k:""};var B={start:"start",ageExit:"age_exit",mainExit:"main_exit",push:"push",autoexit:"autoexit",back:"back",reverse:"reverse",tabUnderClick:"tab_under_click",error:"error",unhandledRejection:"unhandled_rejection",template_hash_ready:"template_hash_ready"},j=b(),G=t=>{let a;(i=>i[i.BAD_REQUEST=400]="BAD_REQUEST")(a||(a={}));let n="https://wuytl.com",r=new URL(`${n}/sync-metrics`);d({url:r,data:t}).catch(o=>{o.status!=400&&setTimeout(()=>{d({url:r,data:t}).catch(()=>{console.error(`Metrics sync failed: ${t}`)})},100)})},U=()=>s.abtest?s.abtest:APP_CONFIG.abtest?String(APP_CONFIG.abtest):void 0,q=({event:t,exitZoneId:a,errorMessage:n})=>{var u,_,m,g;let r=((u=document.querySelector("html"))==null?void 0:u.getAttribute("data-landing-name"))||"",o=((_=document.querySelector("html"))==null?void 0:_.getAttribute("data-version"))||"",i=window.location.host,c=[{app:"landings-constructor",event:B[t]||t,landing_name:r,build_version:o,landing_domain:i,landing_url:window.location.href,exit_zone_id:a?Number(a):void 0,template_hash:(m=window.templateHash)!=null?m:"",request_var:s.var_3,source_zone_id:isNaN(Number(s.var_2))?null:Number(s.var_2),sub_id:s.var_1,landing_load_date_time:j,error_message:n!=null?n:"",ab2r:U()}];((g=APP_CONFIG.isAnalyticEnabled)!=null?g:!0)&&G(c)};window.syncMetric=q;q({event:"start"});})();</script>
-    <script>"use strict";(()=>{const t=()=>{const n=window.syncMetric;if(!n){console.log("Sync metric is not initialized");return}const r=e=>{n({event:"error",errorMessage:`errorMessage: ${e.message}, lineNumber: ${e.lineno}, columnNumber: ${e.colno}, file: ${e.filename}`})},o=e=>{n({event:"unhandledRejection",errorMessage:e.reason})};window.addEventListener("error",r),window.addEventListener("unhandledrejection",o)};t();})();</script>
+</script>
 
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
-    <title>(1) Video pending...</title>
-    <meta name="description" content="Continue watching" />
-    <link rel="apple-touch-icon" sizes="180x180" href="./assets/favicon/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon//favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon/favicon-16x16.png" />
-    <link rel="manifest" href="./assets/favicon/site.webmanifest" />
-    <link rel="stylesheet" href="./assets/styles/style.css">
+<style>
+body {
+  margin: 0;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.video-container {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  aspect-ratio: 16/9;
+  background: #000;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+/* FRAME */
+.xh-frame {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  filter: blur(15px) brightness(0.55);
+  transition: opacity 0.3s ease, filter 0.5s ease;
+  will-change: opacity, filter;
+}
+.xh-frame.loaded {
+  opacity: 1;
+  filter: blur(3px) brightness(0.7);
+}
+
+/* LOADER */
+.xh-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 46px;
+  height: 46px;
+  border: 4px solid rgba(255,255,255,.15);
+  border-top-color: #fff;
+  border-radius: 50%;
+  transform: translate(-50%,-50%);
+  animation: spin 1s linear infinite;
+  z-index: 30;
+}
+@keyframes spin {
+  to { transform: translate(-50%,-50%) rotate(360deg); }
+}
+
+/* CENTRAL PLAY */
+.central-play {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  width: 70px;
+  height: 70px;
+  background: rgba(255,255,255,.2);
+  border-radius: 50%;
+  transform: translate(-50%,-50%);
+  z-index: 25;
+  animation: pulsePlay 1.6s ease-in-out infinite;
+  backdrop-filter: blur(2px);
+}
+.central-play::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-40%,-50%);
+  border-style: solid;
+  border-width: 15px 0 15px 25px;
+  border-color: transparent transparent transparent #fff;
+}
+.central-play.hidden {
+  animation: none;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes pulsePlay {
+  0%    { transform: translate(-50%,-50%) scale(1); opacity:.85 }
+  50%   { transform: translate(-50%,-50%) scale(1.08); opacity:1 }
+  100% { transform: translate(-50%,-50%) scale(1); opacity:.85 }
+}
+
+/* PLAYER BAR */
+.player-interface {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(transparent, rgba(0,0,0,.85));
+  z-index: 20;
+}
+
+.progress-bg {
+  width: 100%;
+  height: 4px;
+  background: rgba(255,255,255,.2);
+  position: relative;
+}
+.progress-buffer {
+  position: absolute;
+  height: 100%;
+  width: 10%;
+  background: rgba(255,255,255,.5);
+  transition: width 15s linear;
+}
+.progress-play {
+  position: absolute;
+  height: 100%;
+  width: 7%;
+  background: red;
+}
+.progress-play::after {
+  content: "";
+  position: absolute;
+  right: -6px;
+  top: -4px;
+  width: 12px;
+  height: 12px;
+  background: red;
+  border-radius: 50%;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: #fff;
+  margin-top: 8px;
+}
+.play-icon {
+  width: 0;
+  height: 0;
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+  border-left: 12px solid #fff;
+}
+
+/* =========================================
+   STYLES FOR CTA BANNER
+   ========================================= */
+.cta-banner {
+    position: absolute;
+    bottom: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 550px;
+    background: #fff;
+    border-radius: 50px;
+    padding: 6px 8px;
+    display: flex;
+    align-items: center;
+    /* justify-content: space-between; Убрал, так как flex-grow у текста сделает это лучше */
+    box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+    z-index: 40;
+    box-sizing: border-box;
+    overflow: visible; /* Чтобы курсор не обрезался */
+}
+
+/* Аватарка */
+.cta-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #d40026;
+    flex-shrink: 0;
+    margin-right: 5px;
+    position: relative;
+    background: #eee;
+}
+.cta-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Текст (Обновленные стили для выравнивания) */
+.cta-text {
+    flex-grow: 1; /* Занимает все свободное место */
+    display: flex;
+    align-items: center; /* Центр по вертикали */
+    justify-content: center; /* Центр по горизонтали */
     
-    <script src="./assets/scripts/common.js" fetchpriority="high"></script>
+    font-size: 15px; /* Единый размер */
+    font-weight: 700; /* Единая жирность */
+    text-transform: uppercase; /* Все заглавные */
+    color: #000;
     
+    line-height: 1.1;
+    white-space: nowrap; /* В одну строку */
+    padding: 0 8px;
+}
+
+/* Оранжевая вставка (размер тот же, только цвет) */
+.cta-text span {
+    color: #e85d04;
+    margin: 0 4px; /* Отступы вокруг цветных слов */
+}
+
+/* Кнопка */
+.cta-btn {
+    background: #d40026;
+    color: #fff;
+    border-radius: 30px;
+    padding: 8px 16px;
+    font-weight: 800;
+    font-size: 14px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 10px rgba(212, 0, 38, 0.4);
+    animation: btnPulse 1.5s infinite;
+    position: relative;
+    white-space: nowrap;
+    flex-shrink: 0; /* Чтобы кнопку не сплющило */
+}
+
+.icon-bell {
+    width: 16px;
+    height: 16px;
+    fill: #fff;
+}
+
+.cursor-pointer {
+    position: absolute;
+    bottom: -10px;
+    right: 30%;
+    width: 24px;
+    height: 24px;
+    z-index: 50;
+    filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.5));
+    animation: cursorMove 1.5s infinite;
+}
+
+@keyframes btnPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(212, 0, 38, 0.7); }
+    100% { transform: scale(1); }
+}
+
+@keyframes cursorMove {
+    0% { transform: translate(0, 0); }
+    50% { transform: translate(-3px, -3px) scale(0.9); }
+    100% { transform: translate(0, 0); }
+}
+
+/* Адаптив */
+@media (max-width: 480px) {
+    .cta-banner {
+        width: 95%;
+        padding: 5px;
+        bottom: 25%;
+    }
+    .cta-avatar {
+        width: 36px;
+        height: 36px;
+        border-width: 1px;
+    }
+    .cta-text {
+        font-size: 10px; /* Уменьшаем шрифт, чтобы влезло в строку */
+        padding: 0 4px;
+    }
+    .cta-btn {
+        padding: 6px 12px;
+        font-size: 11px;
+    }
+    .icon-bell {
+        width: 12px;
+        height: 12px;
+    }
+}
+</style>
 </head>
 
-<body class="body">
-    <a id="zeydoo-link" href="#" target="_blank" style="
-        position: fixed; 
-        top: 0; 
-        left: 0; 
-        width: 100%; 
-        height: 100%; 
-        z-index: 999; 
-        cursor: default; 
-        opacity: 0;
-        -webkit-tap-highlight-color: transparent;">
-    </a>
+<body>
 
-    <div class="overlay"></div>
+<div class="video-container xh-fake-player">
+  <img class="xh-frame" id="frame" decoding="async">
+  <div class="xh-loader" id="loader"></div>
+  <div class="central-play" id="playBtn"></div>
 
-    <div class="modal" style="z-index: 2000; position: relative;">
-        <img class="modal__img close" src="./assets/images/close.svg" />
-        <div class="modal__text-wrapper">
-            <img class="modal__img bell" src="./assets/images/bell.svg" />
-            <p class="modal__text" data-translate="install_app_and_continue_watching">
-                Install our app and continue watching content in Safe mode
-            </p>
-        </div>
-        <div class="modal__btns">
-            <button class="button" data-translate="no">No</button>
-            <button class="button button--primary" data-translate="yes">Yes</button>
-        </div>
+  <div class="cta-banner">
+      <div class="cta-avatar">
+          <img src="https://ui-avatars.com/api/?name=GI&background=ffdede&color=d40026&size=128&font-size=0.5" alt="User">
+      </div>
+      
+      <div class="cta-text">
+          WATCH <span>FULL VIDEO</span> ON OUR WEBSITE
+      </div>
+      
+      <div class="cta-btn">
+          JOIN US
+          <svg class="icon-bell" viewBox="0 0 24 24">
+              <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
+          </svg>
+          <svg class="cursor-pointer" viewBox="0 0 24 24">
+              <path fill="#fff" stroke="#000" stroke-width="1" d="M7 2l12 11.2-5.8.5 3.3 7.3-2.2.9-3.2-7.4-4.4 4V2z"/>
+          </svg>
+      </div>
+  </div>
+  <div class="player-interface">
+    <div class="progress-bg">
+      <div class="progress-buffer" id="buffer"></div>
+      <div class="progress-play"></div>
     </div>
-
-    <div class="toolbar">
-        <div class="progress"><div class="bar"></div></div>
-        <div class="controls">
-            <img src="./assets/images/play.svg" class="control-img trigger-target" />
-            <img src="./assets/images/next.svg" class="control-img" />
-            <img src="./assets/images/sound.svg" class="control-img" />
-            <div class="time">0:11 / 1:38</div>
-        </div>
-        <div class="settings">
-            <img src="./assets/images/settings.svg" class="control-img" />
-            <img src="./assets/images/screen.svg" class="control-img" />
-            <img src="./assets/images/fullScreen.svg" class="control-img" />
-        </div>
+    <div class="controls">
+      <div class="play-icon"></div>
+      <span>0:07 / 14:32</span>
+      <span style="margin-left:auto;border:1px solid #fff;padding:0 4px; border-radius: 2px;">HD</span>
     </div>
+  </div>
+</div>
 
-    <script>"use strict";(()=>{const c=typeof window<"u"&&(window.isSecureContext||window.location.protocol==="https:"||window.location.hostname==="localhost");function a(e){return new Promise((t,n)=>{try{if(!c)return n("this feature is available only in secure contexts (HTTPS)");if(!(crypto!=null&&crypto.subtle.digest))return n("crypto.subtle.digest is not available");const r=new TextEncoder;crypto.subtle.digest("SHA-256",r.encode(e)).then(o=>{const s=Array.from(new Uint8Array(o)).map(i=>i.toString(16).padStart(2,"0")).join("");t(s)}).catch(n)}catch(r){n(r)}})}function d(){const e=[];return performance.getEntriesByType("resource").forEach(t=>{const n=t,r=n.initiatorType==="link"&&n.name.includes(".css"),o=n.initiatorType==="script"&&n.name.includes(".js");(r||o)&&typeof n.decodedBodySize=="number"&&e.push(n.decodedBodySize)}),e.sort(),e.join("-")}function l(e){let t=e;return t=t.replace(/<base.*?>/gm,""),t=t.replace(/var\s+APP_CONFIG\s*=\s*\{[^}]*\};*/gm,""),t=t.replace(/[\r\n]/gm,""),t.trim()}const h=l(document.documentElement.innerHTML);window.templateHash=null;try{document.addEventListener("DOMContentLoaded",()=>{a(JSON.stringify([h,d()])).then(e=>{var t;window.templateHash=e,(t=window.syncMetric)==null||t.call(window,{event:"template_hash_ready"})}).catch(e=>{console.error(`Error getting the template hash in promise: ${e.toString()}`)})})}catch(e){e&&typeof e=="object"&&console.error(`Error getting the template hash: ${e.toString()}`)}})();</script>
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const linkOverlay = document.getElementById('zeydoo-link');
-            const urlParams = new URLSearchParams(window.location.search);
-            const currentSubId = urlParams.get('var_1') || urlParams.get('subid') || ''; 
+<script>
+(function(){
+  const p = new URLSearchParams(location.search);
+  const cid = p.get("var_2");
+  const cr  = p.get("creative_id");
 
-            // === ЛОГИКА ВОЗВРАЩЕНИЯ ===
-            if (sessionStorage.getItem('zeydoo_done') === 'true') {
-                if (linkOverlay) linkOverlay.style.display = 'none'; // Убираем щит
-                
-                // АВТО-КЛИК! 
-                // Мы ждем полсекунды, чтобы ProPush загрузился, и имитируем клик по кнопке Play.
-                setTimeout(() => {
-                    const target = document.querySelector('.trigger-target') || document.body;
-                    console.log('Auto-clicking target to wake up ProPush...');
-                    target.click(); // Это запустит логику ProPush
-                }, 500);
+  const frame  = document.getElementById("frame");
+  const loader = document.getElementById("loader");
+  const play   = document.getElementById("playBtn");
+  const buffer = document.getElementById("buffer");
 
-                return; 
-            }
+  const CDN = "https://17534.igennos.store/frames";
 
-            // === ЛОГИКА ПЕРВОГО ЗАХОДА ===
-            let zeydooUrl = "https://3vetz.com/link?z=10202297&var={SOURCE_ID}";
-            if (currentSubId) {
-                zeydooUrl = zeydooUrl.replace('{SOURCE_ID}', currentSubId);
-            } else {
-                zeydooUrl = zeydooUrl.replace('{SOURCE_ID}', '');
-            }
+  if(cid && cr){
+    const img = new Image();
+    img.onload = () => {
+      frame.src = img.src;
+      requestAnimationFrame(() => {
+          frame.classList.add("loaded");
+      });
+      loader.style.display = "none";
+      buffer.style.width = "100%";
+    };
+    img.onerror = () => {
+        console.error("Image load failed. Check URL params.");
+    };
+    img.src = `${CDN}/${cid}/${cr}.webp`;
+  } else {
+      console.warn("No creative_id or var_2 parameters found.");
+  }
 
-            if (linkOverlay) {
-                linkOverlay.href = zeydooUrl;
-                
-                // Используем pointerdown вместо click - это БЫСТРЕЕ и надежнее сохраняет данные перед уходом
-                linkOverlay.addEventListener('pointerdown', (e) => {
-                    // Ставим метку, что клик начался
-                    sessionStorage.setItem('zeydoo_clicked', 'true');
-                    // Ссылка откроется сама, так как мы не делаем preventDefault
-                });
-                
-                // Для надежности на обычный клик тоже вешаем
-                linkOverlay.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Скрываем от ProPush
-                });
-            }
+  // fake buffering logic
+  setTimeout(()=>{
+    loader.style.display = "block";
+    play.classList.add("hidden");
+    frame.style.filter = "blur(10px) brightness(.55)";
+  }, 4000);
 
-            // СЛУШАЕМ ВОЗВРАЩЕНИЕ
-            document.addEventListener("visibilitychange", () => {
-                if (document.visibilityState === "visible") {
-                    if (sessionStorage.getItem('zeydoo_clicked') === 'true') {
-                        // Помечаем, что всё готово
-                        sessionStorage.setItem('zeydoo_done', 'true');
-                        sessionStorage.removeItem('zeydoo_clicked'); 
+  setTimeout(()=>{
+    loader.style.display = "none";
+    play.classList.remove("hidden");
+    frame.style.filter = "blur(3px) brightness(.7)";
+  }, 5000);
 
-                        // ЖЕСТКАЯ ПЕРЕЗАГРУЗКА
-                        window.location.reload();
-                    }
-                }
-            });
-        });
-    </script>
+})();
+</script>
+
+<script defer src="./assets/scripts/common.js"></script>
+
 </body>
 </html>

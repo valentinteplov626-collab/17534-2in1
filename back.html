@@ -7,26 +7,7 @@
       content="width=device-width, initial-scale=1.0"
     />
     <title>Wait while redirecting...</title>
-    <script>
-      const currentUrl = new URL(window.location.href)
-      const { searchParams } = currentUrl
-      const zoneParam = searchParams.get('z')
-      const domain = searchParams.get('domain')
-      const urlParam = searchParams.get('url')
-
-      searchParams.delete('z')
-      searchParams.delete('domain')
-      searchParams.delete('url')
-
-      if (urlParam) {
-        window.location.href = `${urlParam}?${searchParams}`
-      } else if (zoneParam) {
-        window.location.replace(`${domain}/afu.php?${searchParams}`)
-      } else {
-        window.location.href = 'https://google.com'
-        console.error('Zone param or url param were missed')
-      }
-    </script>
+    <script >"use strict";(()=>{function a({url:t,data:o}){var r;return((r=window==null?void 0:window.navigator)==null?void 0:r.sendBeacon(t.toString(),o?JSON.stringify(o):void 0))?Promise.resolve():Promise.reject(new Error("sendBeacon failed"))}var s=t=>{let o;(n=>n[n.BAD_REQUEST=400]="BAD_REQUEST")(o||(o={}));let c="https://wuytl.com",r=new URL(`${c}/sync-metrics`);a({url:r,data:t}).catch(m=>{m.status!==400&&a({url:r,data:t}).catch(()=>{console.error(`Metrics sync failed: ${t}`)})})};var f=new URL(window.location.href),{searchParams:e}=f,u=e.get("z"),p=e.get("domain"),i=e.get("url"),l=e.get("mData");e.delete("z");e.delete("domain");e.delete("url");e.delete("mData");var d=()=>{if(l)try{let t=JSON.parse(atob(l));s(t)}catch(t){console.error("Failed to parse mData",t)}};i?(d(),window.location.href=`${i}?${e}`):u?(d(),window.location.replace(`${p}/afu.php?${e}`)):(window.location.href="https://google.com",console.error("Zone param or url param were missed"));})();</script>
   </head>
 
   <body>
