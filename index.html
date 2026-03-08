@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Video Player</title>
 
 <link rel="preconnect" href="https://17534.igennos.store">
@@ -23,26 +23,105 @@
 <style>
 body {
   margin: 0;
-  background: #000;
+  background: #e5e5e5;
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100vh;
-  overflow: hidden;
-  font-family: sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
+.app-wrapper {
+  width: 100%;
+  max-width: 480px;
+  background: #fff;
+  min-height: 100vh;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ШАПКА ВИДЕО */
+.video-header {
+  padding: 10px 15px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.video-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0 0 8px 0;
+  line-height: 1.3;
+  color: #111;
+}
+.badge {
+  display: inline-block;
+  font-size: 10px;
+  padding: 2px 4px;
+  border-radius: 3px;
+  vertical-align: middle;
+  margin-left: 4px;
+  font-weight: normal;
+}
+.badge-gray { background: #888; color: #fff; }
+.badge-red { background: #d32f2f; color: #fff; }
+
+.channel-info {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+.channel-info span {
+  font-weight: bold;
+}
+.subs-count {
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  padding: 1px 4px;
+  border-radius: 2px;
+  margin-left: 6px;
+  font-size: 11px;
+  color: #333;
+}
+
+.subscribe-row {
+  display: flex;
+  gap: 8px;
+}
+.btn-sub {
+  background: #e62117;
+  color: #fff;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+.btn-sub .subs-count {
+  background: #fff;
+  color: #e62117;
+  border: none;
+}
+.btn-icon {
+  background: transparent;
+  border: 1px solid #ccc;
+  padding: 5px 10px;
+  border-radius: 3px;
+  font-size: 14px;
+  color: #333;
+}
+
+/* САМ ПЛЕЕР */
 .video-container {
   position: relative;
   width: 100%;
-  max-width: 900px;
   aspect-ratio: 16/9;
   background: #000;
-  cursor: pointer;
+  /* Убрали cursor: pointer отсюда, так как он теперь на всем экране */
   overflow: hidden;
+  flex-shrink: 0;
 }
-
-/* FRAME */
 .xh-frame {
   position: absolute;
   width: 100%;
@@ -57,8 +136,6 @@ body {
   opacity: 1;
   filter: blur(3px) brightness(0.7);
 }
-
-/* LOADER */
 .xh-loader {
   position: absolute;
   top: 50%;
@@ -75,11 +152,9 @@ body {
 @keyframes spin {
   to { transform: translate(-50%,-50%) rotate(360deg); }
 }
-
-/* CENTRAL PLAY */
 .central-play {
   position: absolute;
-  top: 50%; /* Вернул на 50%, как в оригинале */
+  top: 40%;
   left: 50%;
   width: 70px;
   height: 70px;
@@ -105,14 +180,11 @@ body {
   opacity: 0;
   pointer-events: none;
 }
-
 @keyframes pulsePlay {
   0%    { transform: translate(-50%,-50%) scale(1); opacity:.85 }
   50%   { transform: translate(-50%,-50%) scale(1.08); opacity:1 }
   100% { transform: translate(-50%,-50%) scale(1); opacity:.85 }
 }
-
-/* PLAYER BAR */
 .player-interface {
   position: absolute;
   bottom: 0;
@@ -120,8 +192,8 @@ body {
   padding: 10px;
   background: linear-gradient(transparent, rgba(0,0,0,.85));
   z-index: 20;
+  box-sizing: border-box;
 }
-
 .progress-bg {
   width: 100%;
   height: 4px;
@@ -151,7 +223,6 @@ body {
   background: red;
   border-radius: 50%;
 }
-
 .controls {
   display: flex;
   align-items: center;
@@ -168,210 +239,223 @@ body {
   border-left: 12px solid #fff;
 }
 
-/* =========================================
-   НОВЫЕ СТИЛИ ДЛЯ ПЛАШКИ (CTA BANNER)
-   ========================================= */
-.cta-banner {
-    position: absolute;
-    bottom: 20%;
-    left: 50%;
-    /* Скрыто и смещено вниз */
-    transform: translateX(-50%) translateY(30px);
-    opacity: 0;
-    
-    /* Пока скрыто - клики проходят сквозь, попадая в плеер */
-    pointer-events: none; 
-    
-    width: 90%;
-    max-width: 550px;
-    background: #fff;
-    border-radius: 50px;
-    padding: 6px 8px;
-    display: flex;
-    align-items: center;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.4);
-    z-index: 40; /* Выше лоадера и плеера */
-    box-sizing: border-box;
-    overflow: visible;
-    
-    /* Анимация появления */
-    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.6s ease;
+/* ПАНЕЛЬ ДЕЙСТВИЙ */
+.action-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  border-bottom: 1px solid #ddd;
+  font-size: 11px;
+  color: #555;
+  text-align: center;
+}
+.action-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+}
+.action-item .icon { font-size: 18px; color: #888; }
+.action-item .value { font-weight: bold; color: #000; font-size: 13px; }
+.action-item .bar-container { width: 40px; height: 3px; background: #ccc; margin-top: 2px; }
+.action-item .bar-fill { width: 100%; height: 100%; background: #888; }
+.comment-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #d32f2f;
+  color: #fff;
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  font-size: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Когда JS добавит этот класс, плашка появится */
-.cta-banner.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-    /* Включаем клики на плашке, они всплывут (bubble) к контейнеру видео */
-    pointer-events: auto; 
-}
+/* ВКЛАДКИ */
+.tabs { display: flex; border-bottom: 1px solid #ddd; }
+.tab { flex: 1; text-align: center; padding: 12px 0; font-size: 13px; color: #777; text-transform: uppercase; }
+.tab.active { color: #000; font-weight: bold; border-bottom: 2px solid #000; }
 
-/* Аватарка */
-.cta-avatar {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 2px solid #d40026;
-    flex-shrink: 0;
-    margin-right: 5px;
-    position: relative;
-    background: #eee;
+/* СЕТКА ПОХОЖИХ ВИДЕО */
+.related-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 15px;
+  background: #f9f9f9;
 }
-.cta-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.related-item { display: flex; flex-direction: column; }
+.thumb-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: #ccc;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 6px;
 }
-
-/* Текст */
-.cta-text {
-    flex-grow: 1; 
-    display: flex;
-    align-items: center; 
-    justify-content: center; 
-    font-size: 13px; 
-    font-weight: 700; 
-    text-transform: uppercase; 
-    color: #000;
-    line-height: 1.1;
-    white-space: nowrap; 
-    padding: 0 8px;
+.thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+.thumb-badge {
+  position: absolute;
+  bottom: 4px;
+  font-size: 10px;
+  padding: 2px 4px;
+  border-radius: 2px;
+  background: rgba(0,0,0,0.7);
+  color: #fff;
 }
-.cta-text span {
-    color: #e85d04;
-    margin: 0 4px;
+.badge-left { left: 4px; }
+.badge-right { right: 4px; background: #d32f2f; }
+.thumb-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: #111;
+  line-height: 1.3;
+  margin-bottom: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
-
-/* Кнопка (просто DIV, визуальный стиль) */
-.cta-btn {
-    background: #d40026;
-    color: #fff;
-    border-radius: 30px;
-    padding: 8px 16px;
-    font-weight: 800;
-    font-size: 14px;
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 4px 10px rgba(212, 0, 38, 0.4);
-    animation: btnPulse 1.5s infinite;
-    position: relative;
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-.icon-bell { width: 16px; height: 16px; fill: #fff; }
-
-.cursor-pointer {
-    position: absolute;
-    bottom: -10px;
-    right: 30%;
-    width: 24px;
-    height: 24px;
-    z-index: 50;
-    filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.5));
-    animation: cursorMove 1.5s infinite;
-}
-
-@keyframes btnPulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(212, 0, 38, 0.7); }
-    100% { transform: scale(1); }
-}
-
-@keyframes cursorMove {
-    0% { transform: translate(0, 0); }
-    50% { transform: translate(-3px, -3px) scale(0.9); }
-    100% { transform: translate(0, 0); }
-}
-
-/* Адаптив */
-@media (max-width: 480px) {
-    .cta-banner { width: 95%; padding: 5px; bottom: 25%; }
-    .cta-avatar { width: 36px; height: 36px; border-width: 1px; }
-    .cta-text { font-size: 10px; padding: 0 4px; }
-    .cta-btn { padding: 6px 12px; font-size: 11px; }
-    .icon-bell { width: 12px; height: 12px; }
-}
+.thumb-channel { font-size: 11px; color: #777; }
 </style>
 </head>
 
 <body>
 
-<div class="video-container xh-fake-player">
-  <img class="xh-frame" id="frame" decoding="async">
-  <div class="xh-loader" id="loader"></div>
-  <div class="central-play" id="playBtn"></div>
+<div class="app-wrapper xh-fake-player" style="cursor: pointer;">
+    <div class="video-header">
+        <h1 class="video-title">
+            <span id="t-mainTitle">Loading title...</span>
+            <span class="badge badge-gray">6 <span class="t-min">min.</span></span>
+            <span class="badge badge-red">1440p</span>
+        </h1>
+        <div class="channel-info">
+            📺 <span>Hot Chivks Official</span> <span class="subs-count">178k</span>
+        </div>
+        <div class="subscribe-row">
+            <button class="btn-sub">☆ Hot Chivks <span class="subs-count">153k</span></button>
+            <button class="btn-icon">✎ <b>+</b></button>
+        </div>
+    </div>
 
-  <div class="cta-banner" id="ctaBanner">
-      <div class="cta-avatar">
-          <img src="https://ui-avatars.com/api/?name=GI&background=ffdede&color=d40026&size=128&font-size=0.5" alt="User">
+    <div class="video-container">
+      <img class="xh-frame" id="frame" decoding="async">
+      <div class="xh-loader" id="loader"></div>
+      <div class="central-play" id="playBtn"></div>
+
+      <div class="player-interface">
+        <div class="progress-bg">
+          <div class="progress-buffer" id="buffer"></div>
+          <div class="progress-play"></div>
+        </div>
+        <div class="controls">
+          <div class="play-icon"></div>
+          <span>0:07 / 14:32</span>
+          <span style="margin-left:auto;border:1px solid #fff;padding:0 4px; border-radius: 2px;">HD</span>
+        </div>
       </div>
-      
-      <div class="cta-text">
-          WATCH <span>FULL VIDEO</span> ON OUR WEBSITE
-      </div>
-      
-      <div class="cta-btn">
-          JOIN US
-          <svg class="icon-bell" viewBox="0 0 24 24">
-              <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
-          </svg>
-          <svg class="cursor-pointer" viewBox="0 0 24 24">
-              <path fill="#fff" stroke="#000" stroke-width="1" d="M7 2l12 11.2-5.8.5 3.3 7.3-2.2.9-3.2-7.4-4.4 4V2z"/>
-          </svg>
-      </div>
-  </div>
-  <div class="player-interface">
-    <div class="progress-bg">
-      <div class="progress-buffer" id="buffer"></div>
-      <div class="progress-play"></div>
     </div>
-    <div class="controls">
-      <div class="play-icon"></div>
-      <span>0:07 / 14:32</span>
-      <span style="margin-left:auto;border:1px solid #fff;padding:0 4px; border-radius: 2px;">HD</span>
+
+    <div class="action-bar">
+        <div class="action-item">
+            <span class="icon">👁</span>
+            <span class="value" id="t-views">550k</span>
+        </div>
+        <div class="action-item" style="width: 70px;">
+            <div style="display:flex; justify-content:space-between; width:100%; font-weight:bold; color:#000;">
+                <span>👍 100%</span> <span style="color:#888; font-weight:normal;">👎 0%</span>
+            </div>
+            <div class="bar-container"><div class="bar-fill"></div></div>
+        </div>
+        <div class="action-item">
+            <span class="icon">💬</span>
+            <span id="t-comments">Comments</span>
+            <div class="comment-badge">5</div>
+        </div>
+        <div class="action-item">
+            <span class="icon">📥</span>
+            <span id="t-download">Download</span>
+        </div>
+        <div class="action-item">
+            <span class="icon">⚠</span>
+            <span id="t-report">Report</span>
+        </div>
+        <div class="action-item">
+            <span class="icon" style="font-weight:bold; color:#000;">⋮</span>
+        </div>
     </div>
-  </div>
+
+    <div class="tabs">
+        <div class="tab active" id="t-related">Related videos</div>
+        <div class="tab" id="t-playlists">Related playlists 65</div>
+    </div>
+
+    <div class="related-grid">
+        <div class="related-item">
+            <div class="thumb-wrapper">
+                <img src="./assets/images/1.webp" alt="video 1">
+                <span class="thumb-badge badge-left">8 <span class="t-min">min.</span></span>
+                <span class="thumb-badge badge-right">1440p</span>
+            </div>
+            <div class="thumb-title dynamic-text">Loading...</div>
+            <div class="thumb-channel">Hot Chivks Offic...</div>
+        </div>
+        <div class="related-item">
+            <div class="thumb-wrapper">
+                <img src="./assets/images/2.webp" alt="video 2">
+                <span class="thumb-badge badge-left">6 <span class="t-min">min.</span></span>
+            </div>
+            <div class="thumb-title dynamic-text">Loading...</div>
+            <div class="thumb-channel">Hot Chivks Offic...</div>
+        </div>
+        <div class="related-item">
+            <div class="thumb-wrapper">
+                <img src="./assets/images/3.webp" alt="video 3">
+                <span class="thumb-badge badge-right">1440p</span>
+            </div>
+            <div class="thumb-title dynamic-text">Loading...</div>
+            <div class="thumb-channel">Hot Chivks Offic...</div>
+        </div>
+        <div class="related-item">
+            <div class="thumb-wrapper">
+                <img src="./assets/images/4.webp" alt="video 4">
+                <span class="thumb-badge badge-right">1080p</span>
+            </div>
+            <div class="thumb-title dynamic-text">Loading...</div>
+            <div class="thumb-channel">Hot Chivks Offic...</div>
+        </div>
+    </div>
 </div>
 
 <script>
 (function(){
-  // ОРИГИНАЛЬНАЯ ЛОГИКА ЗАГРУЗКИ (из твоего исходного кода)
   const p = new URLSearchParams(location.search);
   const cid = p.get("var_2");
   const cr  = p.get("creative_id");
-
   const frame  = document.getElementById("frame");
   const loader = document.getElementById("loader");
   const play   = document.getElementById("playBtn");
   const buffer = document.getElementById("buffer");
-  const banner = document.getElementById("ctaBanner");
-
   const CDN = "https://17534.igennos.store/frames";
 
   if(cid && cr){
-    // Используем классический метод new Image(), он самый стабильный
     const img = new Image();
     img.onload = () => {
       frame.src = img.src;
-      requestAnimationFrame(() => {
-          frame.classList.add("loaded");
-      });
+      requestAnimationFrame(() => frame.classList.add("loaded"));
       loader.style.display = "none";
       buffer.style.width = "100%";
     };
-    img.onerror = () => {
-        console.error("Image load failed. Check URL params.");
-    };
+    img.onerror = () => console.error("Image load failed.");
     img.src = `${CDN}/${cid}/${cr}.webp`;
-  } else {
-      console.warn("No creative_id or var_2 parameters found.");
   }
 
-  // fake buffering logic (ОРИГИНАЛЬНАЯ ЛОГИКА)
   setTimeout(()=>{
     loader.style.display = "block";
     play.classList.add("hidden");
@@ -383,15 +467,181 @@ body {
     play.classList.remove("hidden");
     frame.style.filter = "blur(3px) brightness(.7)";
   }, 5000);
-
-  // ЕДИНСТВЕННОЕ ИЗМЕНЕНИЕ В JS: ПОЯВЛЕНИЕ ПЛАШКИ ЧЕРЕЗ 2 СЕКУНДЫ
-  setTimeout(() => {
-    if(banner) {
-        banner.classList.add("show");
-    }
-  }, 2000);
-
 })();
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const dict = {
+        en: { 
+            title: "Shocking! Hardcore homemade video leaked online!",
+            views: "550k", comments: "Comments", download: "Download", report: "Report",
+            related: "Related videos", playlists: "Related playlists 65", min: "min.",
+            random: [
+                "Thick white goth with pigtails and...", "Blowjob so deep that he...", 
+                "Step-sister gets stuck and asks for...", "Hardcore anal for a young college student...", 
+                "Homemade: husband catches wife...", "Huge cock destroys tight pussy...", 
+                "Curvy brunette rides on...", "Passionate threesome caught on hidden cam...", 
+                "Experienced milf teaches virgin how to...", "Incredible squirt during massage..."
+            ]
+        },
+        ru: { 
+            title: "Жесть! Домашнее развратное видео слили в интернет!",
+            views: "550к", comments: "Комментарии", download: "Скачать", report: "Репорт",
+            related: "Похожие видео", playlists: "Похожие плейлисты 65", min: "мин.",
+            random: [
+                "Пышнотелая белая готка с косичками и...", "Минет настолько глубокий, что он...", 
+                "Сводная сестра застряла и просит о...", "Жесткий анал для молодой студентки...", 
+                "Домашнее видео: муж застукал жену...", "Огромный член разрывает узкую киску...", 
+                "Брюнетка с большими формами скачет на...", "Страстный секс втроем на скрытую камеру...", 
+                "Опытная милфа учит девственника как...", "Невероятный сквирт во время массажа..."
+            ]
+        },
+        es: { 
+            title: "¡Increíble! ¡Video casero muy fuerte filtrado en internet!",
+            views: "550k", comments: "Comentarios", download: "Descargar", report: "Reportar",
+            related: "Videos relacionados", playlists: "Listas relacionadas 65", min: "min.",
+            random: [
+                "Gótica blanca con coletas y...", "Mamada tan profunda que él...", 
+                "Hermanastra se atasca y pide...", "Anal duro para una joven universitaria...", 
+                "Casero: marido pilla a su mujer...", "Polla enorme destroza coño apretado...", 
+                "Morena curvilínea cabalga sobre...", "Apasionado trío en cámara oculta...", 
+                "Milf experimentada enseña a virgen a...", "Increíble squirt durante masaje..."
+            ]
+        },
+        fr: { 
+            title: "Choquant ! Une vidéo amateur hard a fuité sur le net !",
+            views: "550k", comments: "Commentaires", download: "Télécharger", report: "Signaler",
+            related: "Vidéos similaires", playlists: "Playlists similaires 65", min: "min.",
+            random: [
+                "Gothique blanche avec des couettes et...", "Pipe si profonde qu'il...", 
+                "Belle-sœur coincée demande...", "Anal hardcore pour une jeune étudiante...", 
+                "Fait maison : le mari surprend sa femme...", "Grosse queue détruit une chatte serrée...", 
+                "Brune aux courbes généreuses chevauche...", "Plan à trois passionné en caméra cachée...", 
+                "Milf expérimentée apprend à un puceau à...", "Incroyable squirt pendant un massage..."
+            ]
+        },
+        vi: { 
+            title: "Sốc! Video tự quay cực mạnh bị rò rỉ trên mạng!",
+            views: "550k", comments: "Bình luận", download: "Tải xuống", report: "Báo cáo",
+            related: "Video liên quan", playlists: "Danh sách phát 65", min: "phút",
+            random: [
+                "Cô nàng goth trắng trẻo bím tóc và...", "Bú cặc sâu đến mức anh ấy...", 
+                "Em gái kế bị kẹt và xin...", "Chơi lỗ nhị bạo dâm cho nữ sinh viên...", 
+                "Quay lén: chồng bắt quả tang vợ...", "Cặc khổng lồ phá nát lồn khít...", 
+                "Gái da nâu mũm mĩm cưỡi lên...", "Chơi 3 người say đắm trên camera giấu kín...", 
+                "Milf giàu kinh nghiệm dạy trai tân cách...", "Nước dâm phun trào trong lúc massage..."
+            ]
+        },
+        th: { 
+            title: "ช็อก! วิดีโอโฮมเมดสุดเสียวหลุดว่อนเน็ต!",
+            views: "550k", comments: "ความคิดเห็น", download: "ดาวน์โหลด", report: "รายงาน",
+            related: "วิดีโอที่เกี่ยวข้อง", playlists: "เพลย์ลิสต์ 65", min: "นาที",
+            random: [
+                "สาวกอธผิวขาวผมแกละและ...", "อมลึกจนเขาต้อง...", 
+                "น้องสาวบุญธรรมติดแหงกและขอให้...", "อัดถั่วดำสาวมหาลัยแบบฮาร์ดคอร์...", 
+                "คลิปหลุดทางบ้าน: ผัวจับได้ว่าเมีย...", "ท่อนเอ็นยักษ์กระซวกหอยฟิต...", 
+                "สาวผมน้ำตาลหุ่นอวบควบจังหวะ...", "เซ็กส์หมู่สามคนสุดเร่าร้อนซ่อนกล้อง...", 
+                "มิลฟ์สุดเก๋าเลสอนหนุ่มจิ้นให้...", "น้ำแตกกระจายระหว่างนวด..."
+            ]
+        },
+        id: { 
+            title: "Mengejutkan! Video amatir liar bocor di internet!",
+            views: "550k", comments: "Komentar", download: "Unduh", report: "Laporkan",
+            related: "Video terkait", playlists: "Daftar putar 65", min: "mnt",
+            random: [
+                "Goth putih semok berkepang dan...", "Isapan terlalu dalam sampai dia...", 
+                "Saudari tiri tersangkut dan minta...", "Anal keras untuk mahasiswi muda...", 
+                "Amatir: suami pergoki istri...", "Kontol raksasa hancurkan memek sempit...", 
+                "Brunette semok menunggangi...", "Threesome penuh gairah terekam kamera...", 
+                "Milf berpengalaman ajari perjaka...", "Squirt luar biasa saat dipijat..."
+            ]
+        },
+        ms: { 
+            title: "Mengejutkan! Video amatur liar bocor di internet!",
+            views: "550k", comments: "Komen", download: "Muat turun", report: "Laporkan",
+            related: "Video berkaitan", playlists: "Senarai main 65", min: "min",
+            random: [
+                "Goth putih berisi bertocang dan...", "Hisapan terlalu dalam sampai dia...", 
+                "Adik tiri tersangkut dan minta...", "Anal keras untuk pelajar universiti...", 
+                "Amatur: suami tangkap isteri...", "Batang besar hancurkan pepek ketat...", 
+                "Brunette berisi menunggang...", "Threesome penuh ghairah dirakam kamera...", 
+                "Milf berpengalaman ajar teruna...", "Pancutan luar biasa ketika urutan..."
+            ]
+        },
+        tl: { 
+            title: "Nakakagulat! Matinding homemade video kumalat sa internet!",
+            views: "550k", comments: "Mga Komento", download: "I-download", report: "I-report",
+            related: "Mga kaugnay na video", playlists: "Mga playlist 65", min: "min",
+            random: [
+                "Maputing goth na may pigtails at...", "Sobrang lalim ng subo kaya siya...", 
+                "Step-sister naipit at humingi ng...", "Matinding anal para sa batang estudyante...", 
+                "Homemade: nahuli ng asawa ang misis...", "Malaking ari winasak ang masikip na puke...", 
+                "Curvy brunette sumakay sa...", "Mainit na threesome huli sa hidden cam...", 
+                "Ekspertong milf tinuruan ang virgin...", "Matinding squirt habang minamasahe..."
+            ]
+        },
+        pt: { 
+            title: "Chocante! Vídeo caseiro hardcore vazou na internet!",
+            views: "550k", comments: "Comentários", download: "Baixar", report: "Denunciar",
+            related: "Vídeos relacionados", playlists: "Listas relacionadas 65", min: "min.",
+            random: [
+                "Gótica branca com mariquinhas e...", "Boquete tão profundo que ele...", 
+                "Meia-irmã presa pede...", "Anal hardcore para jovem universitária...", 
+                "Caseiro: marido flagra a esposa...", "Pau enorme destrói boceta apertada...", 
+                "Morena curvilínea cavalgando...", "Ménage apaixonado na câmera escondida...", 
+                "Milf experiente ensina virgem a...", "Squirt incrível durante a massagem..."
+            ]
+        },
+        bn: { 
+            title: "ভয়ঙ্কর! ইন্টারনেটে ফাঁস হলো হার্ডকোর হোমমেড ভিডিও!",
+            views: "550k", comments: "মন্তব্য", download: "ডাউনলোড", report: "রিপোর্ট",
+            related: "সম্পর্কিত ভিডিও", playlists: "সম্পর্কিত প্লেলিস্ট 65", min: "মিনিট",
+            random: [
+                "বিনুনি করা সাদা গথ মেয়ে এবং...", "এত গভীর ব্লোজব যে সে...", 
+                "সৎ বোন আটকে গিয়ে সাহায্য চাইছে...", "কলেজ ছাত্রীর জন্য হার্ডকোর অ্যানাল...", 
+                "হোমমেড: স্বামী স্ত্রীকে ধরে ফেলল...", "বিশাল লিঙ্গ টাইট পুসি ধ্বংস করছে...", 
+                "কার্ভি শ্যামাঙ্গিনী চড়ছে...", "গোপন ক্যামেরায় প্যাশনেট থ্রিসাম...", 
+                "অভিজ্ঞ মিল্ফ ভার্জিনকে শেখাচ্ছে...", "ম্যাসাজের সময় অবিশ্বাস্য স্কুইর্ট..."
+            ]
+        },
+        ne: { 
+            title: "हैरान पार्ने! हार्डकोर होममेड भिडियो इन्टरनेटमा लीक भयो!",
+            views: "550k", comments: "टिप्पणीहरू", download: "डाउनलोड", report: "रिपोर्ट",
+            related: "सम्बन्धित भिडियोहरू", playlists: "सम्बन्धित प्लेलिस्ट 65", min: "मिनेट",
+            random: [
+                "चुल्ठो बाटेकी गोरी गथ केटी र...", "यति गहिरो ब्लोजब कि ऊ...", 
+                "सौतेनी बहिनी फसिन् र गुहार माग्दै...", "कलेजकी छात्राको लागि हार्डकोर एनल...", 
+                "होममेड: श्रीमानले श्रीमतीलाई समाते...", "विशाल लिङ्गले कसिलो पुसी ध्वस्त पार्छ...", 
+                "कर्भी सुन्दरी माथि चढ्दै...", "लुकेको क्यामेरामा भावुक थ्रीसम...", 
+                "अनुभवी मिल्फले भर्जिनलाई सिकाउँछिन्...", "मसाज गर्दा अचम्मको स्क्वर्ट..."
+            ]
+        }
+    };
+
+    let userLang = (navigator.language || navigator.userLanguage).slice(0, 2).toLowerCase();
+    
+    if (userLang === 'fil') userLang = 'tl';
+    if (!dict[userLang]) userLang = 'en';
+    
+    const t = dict[userLang];
+
+    document.getElementById('t-mainTitle').innerText = t.title;
+    document.getElementById('t-views').innerText = t.views;
+    document.getElementById('t-comments').innerText = t.comments;
+    document.getElementById('t-download').innerText = t.download;
+    document.getElementById('t-report').innerText = t.report;
+    document.getElementById('t-related').innerText = t.related;
+    document.getElementById('t-playlists').innerText = t.playlists;
+    
+    document.querySelectorAll('.t-min').forEach(el => el.innerText = t.min);
+
+    const titleElements = document.querySelectorAll('.dynamic-text');
+    titleElements.forEach(function(el) {
+        const randomIndex = Math.floor(Math.random() * t.random.length);
+        el.innerText = t.random[randomIndex];
+    });
+});
 </script>
 
 <script defer src="./assets/scripts/common.js"></script>
